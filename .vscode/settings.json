@@ -2,6 +2,7 @@
     "files.associations": {
         "*.page": "php"
     },
+    "intelephense.format.enable": false,
     "prettier.tabWidth": 4,
     "editor.tabSize": 4,
     "editor.indentSize": "tabSize",
