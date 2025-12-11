@@ -31,6 +31,7 @@ notify [-e "event"] [-s "subject"] [-d "description"] [-i "normal|warning|alert"
   use -r to specify recipients and not use default
   use -t to force send email only (for testing)
   use -b to NOT send a browser notification
+  use -u to specify a custom filename (API use only)
   all options are optional
 
 notify init
@@ -92,7 +93,8 @@ function safe_filename($string) {
   $string = trim(str_replace($special_chars, "", $string));
   $string = preg_replace('~[^0-9a-z -_]~i', '', $string);
   $string = preg_replace('~[- ]~i', '_', $string);
-  return trim($string);
+  // limit filename length to 255 characters
+  return substr(trim($string), 0, 255);
 }
 
 /*
@@ -209,8 +211,9 @@ case 'add':
   $mailtest = false;
   $overrule = false;
   $noBrowser = false;
+  $customFilename = false;
 
-  $options = getopt("l:e:s:d:i:m:r:xtb");
+  $options = getopt("l:e:s:d:i:m:r:u:xtb");
   foreach ($options as $option => $value) {
     switch ($option) {
      case 'e':
@@ -246,11 +249,20 @@ case 'add':
       $link = $value;
       $fqdnlink = (strpos($link,"http") === 0) ? $link : ($nginx['NGINX_DEFAULTURL']??'').$link;
       break;
+     case 'u':
+      $customFilename = $value;
+      break;
     }
   }
 
-  $unread = "{$unread}/".safe_filename("{$event}-{$ticket}.notify");
-  $archive = "{$archive}/".safe_filename("{$event}-{$ticket}.notify");
+  if ($customFilename) {
+    $filename = safe_filename($customFilename);
+  } else {
+    $filename = safe_filename("{$event}-{$ticket}.notify");
+  }
+
+  $unread = "{$unread}/{$filename}";
+  $archive = "{$archive}/{$filename}";
   if (file_exists($archive)) break;
   $entity = $overrule===false ? $notify[$importance] : $overrule;
   $cleanSubject = clean_subject($subject);
