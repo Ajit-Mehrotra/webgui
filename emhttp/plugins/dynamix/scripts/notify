@@ -88,13 +88,13 @@ function generate_email($event, $subject, $description, $importance, $message, $
   return mail($to, $subj, implode("\n", $body), implode("\n", $headers));
 }
 
-function safe_filename($string) {
+function safe_filename($string, $maxLength=255) {
   $special_chars = ["?", "[", "]", "/", "\\", "=", "<", ">", ":", ";", ",", "'", "\"", "&", "$", "#", "*", "(", ")", "|", "~", "`", "!", "{", "}"];
   $string = trim(str_replace($special_chars, "", $string));
   $string = preg_replace('~[^0-9a-z -_]~i', '', $string);
   $string = preg_replace('~[- ]~i', '_', $string);
-  // limit filename length to 255 characters
-  return substr(trim($string), 0, 255);
+  // limit filename length to $maxLength characters
+  return substr(trim($string), 0, $maxLength);
 }
 
 /*
@@ -258,7 +258,13 @@ case 'add':
   if ($customFilename) {
     $filename = safe_filename($customFilename);
   } else {
-    $filename = safe_filename("{$event}-{$ticket}.notify");
+    // suffix length: _{timestamp}.notify = 1+10+7 = 18 chars.
+    $suffix = "_{$ticket}.notify";
+    $max_event_len = 255 - strlen($suffix);
+    // sanitize event, truncating it to leave room for suffix
+    $clean_event = safe_filename($event, $max_event_len);
+    // construct filename with suffix (underscore separator matches safe_filename behavior)
+    $filename = "{$clean_event}{$suffix}";
   }
 
   $unread = "{$unread}/{$filename}";
