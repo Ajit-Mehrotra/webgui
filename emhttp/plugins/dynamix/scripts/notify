@@ -91,7 +91,7 @@ function generate_email($event, $subject, $description, $importance, $message, $
 function safe_filename($string, $maxLength=255) {
   $special_chars = ["?", "[", "]", "/", "\\", "=", "<", ">", ":", ";", ",", "'", "\"", "&", "$", "#", "*", "(", ")", "|", "~", "`", "!", "{", "}"];
   $string = trim(str_replace($special_chars, "", $string));
-  $string = preg_replace('~[^0-9a-z _\-]~i', '', $string);
+  $string = preg_replace('~[^0-9a-z \-_.]~i', '', $string);
   $string = preg_replace('~[- ]~i', '_', $string);
   // limit filename length to $maxLength characters
   return substr(trim($string), 0, $maxLength);
