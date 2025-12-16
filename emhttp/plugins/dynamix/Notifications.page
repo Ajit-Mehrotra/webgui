@@ -124,6 +124,24 @@ _(Display position)_:
 
 :notifications_display_position_help:
 
+_(Stack notifications)_:
+: <select name="expand">
+  <?=mk_option($notify['expand'] ?? 'true', "true", _("Yes"))?>
+  <?=mk_option($notify['expand'] ?? 'true', "false", _("No"))?>
+  </select>
+
+:notifications_stack_help:
+
+_(Duration)_:
+: <input type="number" name="duration" value="<?=$notify['duration'] ?? 5000?>" min="1000" step="500">
+
+:notifications_duration_help:
+
+_(Max notifications)_:
+: <input type="number" name="max" value="<?=$notify['max'] ?? 3?>" min="1" max="10">
+
+:notifications_max_help:
+
 _(Date format)_:
 : <select name="date">
   <?=mk_option($notify['date'], "d-m-Y", _("DD-MM-YYYY"))?>
