@@ -16,44 +16,49 @@ $docroot ??= ($_SERVER['DOCUMENT_ROOT'] ?: '/usr/local/emhttp');
 
 $notify = "$docroot/webGui/scripts/notify";
 
-switch ($_POST['cmd']??'') {
-case 'init':
-  shell_exec("$notify init");
-  break;
-case 'smtp-init':
-  shell_exec("$notify smtp-init");
-  break;
-case 'cron-init':
-  shell_exec("$notify cron-init");
-  break;
-case 'add':
-  foreach ($_POST as $option => $value) {
-    switch ($option) {
-    case 'e':
-    case 's':
-    case 'd':
-    case 'i':
-    case 'm':
-      $notify .= " -{$option} ".escapeshellarg($value);
-      break;
-    case 'x':
-    case 't':
-      $notify .= " -{$option}";
-      break;
+switch ($_POST['cmd'] ?? '') {
+  case 'init':
+    shell_exec("$notify init");
+    break;
+  case 'smtp-init':
+    shell_exec("$notify smtp-init");
+    break;
+  case 'cron-init':
+    shell_exec("$notify cron-init");
+    break;
+  case 'add':
+    foreach ($_POST as $option => $value) {
+      switch ($option) {
+        case 'e':
+        case 's':
+        case 'd':
+        case 'i':
+        case 'm':
+          $notify .= " -{$option} " . escapeshellarg($value);
+          break;
+        case 'u':
+          $notify .= " -{$option} " . escapeshellarg($value);
+          break;
+        case 'x':
+        case 't':
+          $notify .= " -{$option}";
+          break;
+      }
     }
-  }
-  shell_exec("$notify add");
-  break;
-case 'get':
-  echo shell_exec("$notify get");
-  break;
-case 'hide':
-  $file = $_POST['file']??'';
-  if (file_exists($file) && $file==realpath($file) && pathinfo($file,PATHINFO_EXTENSION)=='notify') chmod($file,0400);
-  break;
-case 'archive':
-  $file = $_POST['file']??'';
-  if ($file && strpos($file,'/')===false) shell_exec("$notify archive ".escapeshellarg($file));
-  break;
+    shell_exec("$notify add");
+    break;
+  case 'get':
+    echo shell_exec("$notify get");
+    break;
+  case 'hide':
+    $file = $_POST['file'] ?? '';
+    if (file_exists($file) && $file == realpath($file) && pathinfo($file, PATHINFO_EXTENSION) == 'notify')
+      chmod($file, 0400);
+    break;
+  case 'archive':
+    $file = $_POST['file'] ?? '';
+    if ($file && strpos($file, '/') === false)
+      shell_exec("$notify archive " . escapeshellarg($file));
+    break;
 }
 ?>
